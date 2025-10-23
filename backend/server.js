@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 dotenv.config();
 
 import pool from "./db.js";
@@ -9,7 +11,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   res.set("Access-Control-Allow-Origin", process.env.FRONTEND_URL); // allow all origins from the frontend url only
-  res.set("Access-Control-Allow-Methods", "GET");
+  res.set("Access-Control-Allow-Methods", "GET, POST");
   res.set("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
@@ -41,6 +43,34 @@ app.get("/api/blog/:slug", async (req, res) => {
     console.error(err.message);
     res.status(500).send("Server error");
   }
+});
+
+//handle admin login
+app.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
+  // Check if credentials match
+  const user = await pool.query(`SELECT * FROM admins WHERE username= $1`, [username]);
+  const isMatch = await bcrypt.compare(password, user.rows[0]?.hashed_password || "");
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid username or password" });
+  } 
+  // Create JWT token
+  const token = jwt.sign(
+    {
+      username: user.rows[0].username,
+      role: "admin",
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "4h" } 
+  );
+
+  // Send the token to frontend
+  return res.status(200).json({
+    message: "Login successful",
+    token,
+    expiresIn: 4 * 60 * 60, 
+  });
+  
 });
 
 const port = process.env.PORT || 5000;
