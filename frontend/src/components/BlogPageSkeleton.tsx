@@ -1,6 +1,6 @@
 export default function BlogPageSkeleton() {
     return (
-        <article className="w-200 group p-6 mb-6 rounded-3xl shadow-md animate-pulse">
+        <article className="w-200 mx-auto p-6 mb-6 rounded-3xl shadow-md animate-pulse">
         {/* Title placeholder */}
         <div className="h-8 w-3/4 bg-gray-500 rounded mb-2"></div>
 

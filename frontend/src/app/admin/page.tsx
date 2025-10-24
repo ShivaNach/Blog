@@ -78,7 +78,7 @@ export default function LoginPage() {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=visibility,visibility_off"
       />
-      <div className="flex items-center justify-center bg-gray-900">
+      <div className="flex items-center justify-center">
         <div className="w-full max-w-md rounded-2xl p-8 bg-[#001f42]">
           <h1 className="mb-6 text-center text-6xl font-bold text-white">Admin Login</h1>
 

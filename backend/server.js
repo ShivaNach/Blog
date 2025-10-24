@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { verifyToken } from "./middleware.js";
 dotenv.config();
 
 import pool from "./db.js";
@@ -12,7 +13,10 @@ app.use(express.json());
 app.use((req, res, next) => {
   res.set("Access-Control-Allow-Origin", process.env.FRONTEND_URL); // allow all origins from the frontend url only
   res.set("Access-Control-Allow-Methods", "GET, POST");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
+  res.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
   next();
 });
 
@@ -70,7 +74,17 @@ app.post("/api/login", async (req, res) => {
     token,
     expiresIn: 4 * 60 * 60, 
   });
+});
+
+//create new database
+app.post("/api/create", verifyToken, async (req, res) => {
+  const {title, description, content} = req.body; 
+
+  const slug = title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'); //converts title to slug by adding kebab (-) case 
   
+  const result = await pool.query(`INSERT INTO blogs VALUES($1, $2, $3, NOW(), $4)`, [title, description, content, slug]);
+  if (result.rowCount === 0) { return res.status(500).json({ message: "Failed to create blog" }); }
+  return res.status(201).json({ message: "Blog created successfully" });
 });
 
 const port = process.env.PORT || 5000;

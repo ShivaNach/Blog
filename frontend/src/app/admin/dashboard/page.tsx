@@ -12,7 +12,8 @@ interface DecodedToken {
 
 export default function Dashboard() {
   const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true); // new state
+  const [checkingAuth, setCheckingAuth] = useState(true); 
+  const [adminUsername, setAdminUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,6 +25,7 @@ export default function Dashboard() {
     try {
       const decoded: DecodedToken = jwtDecode(token);
       const currentTime = Date.now() / 1000;
+      setAdminUsername(decoded.username);
       if (decoded.exp < currentTime || decoded.role !== "admin") {
         // token expired or not admin
         localStorage.removeItem("token");
@@ -55,14 +57,20 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <p className="text-2xl font-semibold mb-6">Congrats, you are logged in!</p>
-      <button
+    <div className="flex flex-col items-center gap-10">
+      <div className="flex items-center justify-between w-full px-8">
+      <h1 className="text-3xl ml-30 font-semibold text-center flex-1">
+        Welcome Back {adminUsername}!
+      </h1>
+
+      <a
         onClick={handleSignOut}
-        className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+        className="p-3 bg-blue-500 text-white rounded-xl hover:bg-blue-700 transition ml-4"
       >
-        Sign Out
-      </button>
+        SIGN OUT
+      </a>
+    </div>
+    <a  href="/admin/dashboard/create" className="p-4 text-4xl font-semibold bg-gradient-to-r from-blue-500 to-green-600 rounded-4xl">Create New Blog</a>
     </div>
   );
 }

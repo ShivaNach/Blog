@@ -28,7 +28,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
   const blog: Blog = await res.json();
 
   return (
-    <main className="max-w-3xl mx-auto p-6">
+    <main className="max-w-3xl mx-auto p-6 items-center">
       <h1 className="text-3xl font-bold mb-4">{blog.title}</h1>
       <p className="text-gray-500 mb-6">
         {new Date(blog.published_at).toLocaleDateString("en-US", {

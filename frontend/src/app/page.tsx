@@ -86,7 +86,7 @@ export default function HomePage() {
   if (initialLoading) {
     const skeletonCount = 6;
     return (
-      <div className="grid gap-6">
+      <div className="grid gap-6 items-center">
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <BlogCardSkeleton key={i} />
         ))}
@@ -95,7 +95,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="p-4 flex flex-col gap-2">
+    <div className="p-4 flex flex-col items-center gap-2">
       {posts.map((post, idx) => (
         <BlogCard
           key={idx}

@@ -16,7 +16,7 @@ export default function RootLayout({
   return (  
     <html lang="en" className="dark">
       <body
-        className={`${inter.className} bg-[#001b39] text-gray-100 min-h-screen flex flex-col items-center`}
+        className={`${inter.className} bg-[#001b39] text-gray-100 min-h-screen flex flex-col`}
       >
         <header className="p-6 text-center">
           <Link href={"https://github.com/ShivaNach"} target="_blank" rel="noopener noreferrer">
