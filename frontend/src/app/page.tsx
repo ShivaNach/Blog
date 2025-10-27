@@ -4,7 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import BlogCard from "@/components/BlogCard";
 import BlogCardSkeleton from "@/components/BlogCardSkeleton";
 
-export default function HomePage() {
+interface HomePageProps {
+  adminView?: boolean; // optional prop called from dashboard for admin view
+}
+
+export default function HomePage({adminView = false}: HomePageProps) {
   const [posts, setPosts] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -108,6 +112,7 @@ export default function HomePage() {
           description={post.description}
           isNew={idx < 3}
           slug={post.slug}
+          adminView = { adminView }
         />
       ))}
 

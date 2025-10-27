@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import HomePage from "@/app/page";
 
 interface DecodedToken {
   username: string;
@@ -71,6 +72,8 @@ export default function Dashboard() {
       </a>
     </div>
     <a  href="/admin/dashboard/create" className="p-4 text-4xl font-semibold bg-gradient-to-r from-blue-500 to-green-600 rounded-4xl">Create New Blog</a>
+    <h1 className="text-5xl">VIEW BLOGS</h1>
+    <HomePage adminView={true} />
     </div>
   );
 }

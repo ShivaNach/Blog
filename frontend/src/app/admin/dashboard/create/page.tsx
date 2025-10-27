@@ -55,8 +55,11 @@ export default function CreateBlog() {
   //Submit form data
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setMessage("");
+    
+    const confirmed = window.confirm("Do you wish to publish your blog?");
+    if (!confirmed) return;
+    setLoading(true);
 
     try {
       const token = localStorage.getItem("token");

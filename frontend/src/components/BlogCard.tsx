@@ -5,15 +5,17 @@ type BlogCardProps = {
   description: string;
   isNew : boolean;
   slug: string;
+  adminView: boolean;
 };
 function truncateText(text: string, maxLength: number) {
   const words: string[] = text.split(" ");
   if (words.length <= maxLength) return text;
   return words.slice(0, maxLength).join(" ") + "...";
 }
-export default function BlogCard({slug, title, date, description, isNew}: BlogCardProps) {
+export default function BlogCard({slug, title, date, description, isNew, adminView}: BlogCardProps) {
+  const pathname = adminView ? `/admin/blog/${slug}` : `/blog/${slug}`;
   return (
-    <Link href={{ pathname: `/blog/${slug}` }} className="no-underline">
+    <Link href={pathname} className="no-underline">
     <article className="w-200 group p-6 mb-6 rounded-3xl shadow-md bg-[#002652] hover:bg-[#00326b] transition-colors">
       <h2 className="text-2xl font-semibold mb-2 flex items-center ">
       <span className="group-hover:underline">{title}</span>
