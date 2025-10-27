@@ -13,7 +13,7 @@ interface DecodedToken {
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [checkingAuth, setCheckingAuth] = useState(true); // new state
+  const [checkingAuth, setCheckingAuth] = useState(true); 
   const router = useRouter();
 
   // Redirect if user already has a valid admin token

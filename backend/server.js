@@ -87,6 +87,36 @@ app.post("/api/create", verifyToken, async (req, res) => {
   return res.status(201).json({ message: "Blog created successfully" });
 });
 
+//delete blog
+app.post("/api/delete", verifyToken, (req, res) => {
+  const { slug } = req.body;
+  pool.query(`DELETE FROM blogs WHERE slug = $1`, [slug], (err, result) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send("Server error");
+    }
+    if (result.rowCount === 0) {
+      return res.status(404).send("Blog not found");
+    }
+    return res.status(200).json({ message: "Blog deleted successfully" });
+  });
+});
+
+//update blog
+app.post("/api/update", verifyToken, async (req, res) => {
+  const { title, description, content, slug } = req.body;
+  try {
+    const result = await pool.query(`UPDATE blogs SET title = $1, description = $2, content = $3, published_at = NOW() WHERE slug = $4`, [title, description, content, slug]);
+    if (result.rowCount === 0) {
+      return res.status(404).send("Blog not found");
+    }
+    return res.status(200).json({ message: "Blog updated successfully" });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send("Server error");
+  }
+});
+
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

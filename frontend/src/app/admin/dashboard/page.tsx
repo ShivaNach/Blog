@@ -1,49 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import { useAdminInAuthCheck } from "@/hooks/useAdminInAuthCheck";
 import HomePage from "@/app/page";
-
-interface DecodedToken {
-  username: string;
-  role: string;
-  exp: number; // expiry timestamp in seconds
-}
 
 export default function Dashboard() {
   const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true); 
-  const [adminUsername, setAdminUsername] = useState<string | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.replace("/admin");
-      return;
-    }
-
-    try {
-      const decoded: DecodedToken = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-      setAdminUsername(decoded.username);
-      if (decoded.exp < currentTime || decoded.role !== "admin") {
-        // token expired or not admin
-        localStorage.removeItem("token");
-        router.replace("/admin");
-        return;
-      }
-    } catch (err) {
-      console.error("Invalid token", err);
-      localStorage.removeItem("token");
-      router.replace("/admin");
-      return;
-    }
-
-    // Token is valid
-    setCheckingAuth(false);
-  }, [router]);
-
+  const { setLoading, checkingAuth, loading, adminUsername } = useAdminInAuthCheck();
+  
   function handleSignOut() {
     localStorage.removeItem("token");
     router.replace("/admin");
@@ -71,7 +35,7 @@ export default function Dashboard() {
         SIGN OUT
       </a>
     </div>
-    <a  href="/admin/dashboard/create" className="p-4 text-4xl font-semibold bg-gradient-to-r from-blue-500 to-green-600 rounded-4xl">Create New Blog</a>
+    <a  href="/admin/dashboard/create" className="p-4 text-4xl font-semibold bg-gradient-to-r from-blue-500 to-green-600 rounded-4xl hover:from-green-600 hover:to-blue-500 hover:rotate-1 transition">Create New Blog</a>
     <h1 className="text-5xl">VIEW BLOGS</h1>
     <HomePage adminView={true} />
     </div>

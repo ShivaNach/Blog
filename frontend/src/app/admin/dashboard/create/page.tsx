@@ -1,51 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
-
-interface DecodedToken {
-  username: string;
-  role: string;
-  exp: number;
-}
+import { useAdminInAuthCheck } from "@/hooks/useAdminInAuthCheck";
+import { useState } from "react";
 
 export default function CreateBlog() {
-  const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     content: "",
   });
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
-  // 🔐 Check for admin JWT
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.replace("/admin");
-      return;
-    }
-
-    try {
-      const decoded: DecodedToken = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-      if (decoded.exp < currentTime || decoded.role !== "admin") {
-        localStorage.removeItem("token");
-        router.replace("/admin");
-        return;
-      }
-    } catch (err) {
-      console.error("Invalid token", err);
-      localStorage.removeItem("token");
-      router.replace("/admin");
-      return;
-    }
-
-    setCheckingAuth(false);
-  }, [router]);
+  const {setLoading, checkingAuth, loading} = useAdminInAuthCheck()
 
   // Handle field changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
