@@ -14,7 +14,7 @@ export const useAdminInAuthCheck = () => {
     const router = useRouter();
     const [checkingAuth, setCheckingAuth] = useState(true);
     const [loading, setLoading] = useState(false);
-    let adminUsername: string | null = null; 
+    const [adminUsername, setAdminUsername] = useState<string | null>(null);
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -25,7 +25,7 @@ export const useAdminInAuthCheck = () => {
         try {
             const decoded: DecodedToken = jwtDecode(token);
             const currentTime = Date.now() / 1000;
-            adminUsername = decoded.username;
+            setAdminUsername(decoded.username);
             if (decoded.exp < currentTime || decoded.role !== "admin") {
                 localStorage.removeItem("token");
                 router.replace("/admin");
