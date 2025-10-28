@@ -29,20 +29,14 @@ export default function HomePage({adminView = false, search}: HomePageProps) {
 
     try {
       if(search) {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs?page=${pageNum}&search=${encodeURIComponent(search)}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs?search=${encodeURIComponent(search)}`);
         console.log(encodeURIComponent(search));
         if (!res.ok) throw new Error(`API error: ${res.status}`);
         const data = await res.json();
 
         console.log("API response for page", pageNum, data);
-
-        // Expecting an array. If API returns metadata, adapt accordingly.
-        if (!Array.isArray(data) || data.length === 0) {
-          setHasMore(false);
-          return;
-        }
-
         setPosts((p) => [...p, ...data]);
+        setHasMore(false);
     } else {
       console.log("Fetching page", pageNum);
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs?page=${pageNum}`);
