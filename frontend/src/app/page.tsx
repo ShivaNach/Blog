@@ -6,9 +6,10 @@ import BlogCardSkeleton from "@/components/BlogCardSkeleton";
 
 interface HomePageProps {
   adminView?: boolean; // optional prop called from dashboard for admin view
+  search?: string;
 }
 
-export default function HomePage({adminView = false}: HomePageProps) {
+export default function HomePage({adminView = false, search}: HomePageProps) {
   const [posts, setPosts] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -27,21 +28,37 @@ export default function HomePage({adminView = false}: HomePageProps) {
     else setLoading(true);
 
     try {
+      if(search) {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs?page=${pageNum}&search=${encodeURIComponent(search)}`);
+        console.log(encodeURIComponent(search));
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        const data = await res.json();
+
+        console.log("API response for page", pageNum, data);
+
+        // Expecting an array. If API returns metadata, adapt accordingly.
+        if (!Array.isArray(data) || data.length === 0) {
+          setHasMore(false);
+          return;
+        }
+
+        setPosts((p) => [...p, ...data]);
+    } else {
       console.log("Fetching page", pageNum);
-      // simulate latency if you like: await new Promise(r => setTimeout(r, 500));
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs?page=${pageNum}`);
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = await res.json();
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs?page=${pageNum}`);
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        const data = await res.json();
 
-      console.log("API response for page", pageNum, data);
+        console.log("API response for page", pageNum, data);
 
-      // Expecting an array. If API returns metadata, adapt accordingly.
-      if (!Array.isArray(data) || data.length === 0) {
-        setHasMore(false);
-        return;
-      }
+        // Expecting an array. If API returns metadata, adapt accordingly.
+        if (!Array.isArray(data) || data.length === 0) {
+          setHasMore(false);
+          return;
+        }
 
-      setPosts((p) => [...p, ...data]);
+        setPosts((p) => [...p, ...data]);
+    }
     } catch (err) {
       console.error("Failed to fetch posts:", err);
     } finally {
@@ -54,9 +71,13 @@ export default function HomePage({adminView = false}: HomePageProps) {
   // Fetch whenever `page` changes (including initial page=1)
   useEffect(() => {
     fetchPosts(page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
-
+  useEffect(() => {
+    setPage(1);          // go back to first page
+    setPosts([]);        // clear old results
+    setHasMore(true); 
+    isFetchingRef.current = false;   // allow infinite scroll again
+}, [search]);
   // IntersectionObserver: attach after DOM renders the sentinel.
   // We include posts.length so this effect re-runs after initial load and the sentinel exists.
   useEffect(() => {

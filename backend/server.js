@@ -20,12 +20,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// Get all blogs with pagination
+// Get all blogs with pagination and handle search
 app.get("/api/blogs", async (req, res) => {
   const page = req.query.page || 1;
+  const search = req.query.search || null;
+  console.log(search);
   const limit = 20;
   const offset = (page - 1) * limit;
   try {
+    if(search){
+      const result = await pool.query(`SELECT slug, title, description, published_at FROM blogs WHERE title ILIKE $1 OR description ILIKE $1 ORDER BY published_at DESC LIMIT $2 OFFSET $3`, [`%${search}%`, limit, offset]);
+      return res.json(result.rows);
+    }
     const result = await pool.query(`SELECT slug, title, description, published_at FROM blogs ORDER BY published_at DESC LIMIT $1 OFFSET $2`, [limit, offset]);
     res.json(result.rows);
   } catch (err) {
