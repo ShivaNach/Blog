@@ -105,36 +105,41 @@ export default function HomePage({adminView = false, search}: HomePageProps) {
   if (initialLoading) {
     const skeletonCount = 6;
     return (
-      <div className="grid gap-6 items-center">
-        {Array.from({ length: skeletonCount }).map((_, i) => (
-          <BlogCardSkeleton key={i} />
-        ))}
+      <div className="flex flex-col items-center w-full px-4 py-8">
+        <div className="w-full max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-stretch">
+          {Array.from({ length: skeletonCount }).map((_, i) => (
+            <div key={i} className="flex">
+              <BlogCardSkeleton />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
-
   return (
-    <div className="p-4 flex flex-col items-center gap-2">
-      {posts.map((post, idx) => (
-        <BlogCard
-          key={idx}
-          title={post.title}
-          date={new Date(post.published_at).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-          description={post.description}
-          isNew={idx < 3}
-          slug={post.slug}
-          adminView = { adminView }
-        />
-      ))}
+    <div className="flex flex-col items-center w-full px-4 py-8">
+    {/* Grid wrapper */}
+      <div className="w-full max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-stretch">
+        {posts.map((post, idx) => (
+          <div key={idx} className="flex">
+            <BlogCard
+              title={post.title}
+              date={new Date(post.published_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+              description={post.description}
+              isNew={idx < 3}
+              slug={post.slug}
+              adminView={adminView}
+            />
+          </div>
+        ))}
+      </div>
 
-      {/* sentinel observed by IntersectionObserver */}
+      {/* Sentinel + loading indicator */}
       {hasMore && <div ref={loaderRef} className="h-10" />}
-
-      {/* small loading indicator for subsequent pages */}
       {loading && !initialLoading && (
         <p className="text-center text-gray-400 py-4">Loading more...</p>
       )}
